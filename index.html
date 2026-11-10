@@ -1450,6 +1450,10 @@ body.side .cc-feed .cc-coach,.cc-coach{background:#fff;color:var(--navy);border:
 <style id="farhan-ui">
 /* #4: the «أسئلة التحدي» title is already on the side handle, so drop it from the panel top */
 body.side .qpanel .q-h{display:none}
+.qrow.done .qsend,.qrow.done .qhintb{display:none!important}
+.cc-dur{font-weight:900}
+.cc-pwbig{font-size:1.5em;letter-spacing:3px;direction:ltr;display:inline-block;padding:4px 14px;font-weight:900}
+.cc-pwbig .pc-dig{color:#8DC63F}.cc-pwbig .pc-low{color:#FCAD0F}.cc-pwbig .pc-up{color:#5BC8FF}
 /* #1: one flat background everywhere (footer + behind questions match the device middle) */
 body{background:#e5ece7!important}
 .ethics{background:transparent}
@@ -2920,7 +2924,7 @@ L.progress(0, 0); L.enable(false); L.expl('');
       else if (res.none) L.add(CC.t('r_none'), 'warn ar');
       else {
         L.add(CC.t('e_stop'), 'warn ar');
-        L.add(hit === null ? CC.t('r_capnone') : CC.t('r_cap', { n: CC.fmt(res.done), total: CC.fmt(cmd.total) }), 'warn ar'); if (hit !== null) L.add(CC.t('r_est', { est: CC.dur((hit + 1) / RATE) }), 'warn ar');
+        L.add(hit === null ? CC.t('r_capnone') : CC.t('r_cap', { n: CC.fmt(res.done), total: CC.fmt(cmd.total) }), 'warn ar'); if (hit !== null) L.add(CC.t('r_est', { est: CC.dur((hit + 1) / RATE) }), (st.phase === 'strong' ? 'ok ar cc-dur' : 'warn ar'));
       }
       st.running = false; L.actions([]);
       res.cmdRaw = cmd.raw; res.len = cmd.len; res.opts = cmd.opts;
@@ -2950,6 +2954,7 @@ L.progress(0, 0); L.enable(false); L.expl('');
     }
     async function commandStage(taskKey, ghost, untilFound, vars) {
       st.armed = true; st.example = ghost;
+      if (taskKey === 't_test') guided = false;   /* show the bouncing command help box again for the second command (Farhan 2026-11-10) */
       var again = false;
       while (true) {
         L.task(CC.t(taskKey, vars)); L.expl(''); again = false; L.value(''); L.enable(true);
@@ -2992,7 +2997,7 @@ L.progress(0, 0); L.enable(false); L.expl('');
     if (CC.guide) CC.guide.hide();
     CC.emit('step', { id: 'opened' });
     await CC.say('p6b'); if (!ok()) return;
-    st.phase = 'browse'; CC.free = true; L.task(CC.t('t_browse')); L.expl('');
+    st.phase = 'browse'; CC.free = true; L.task(CC.t('t_browse')); L.expl(''); document.body.classList.add('cc-q-open');  /* open the questions when the phone opens */
     if (CC.guide && self) CC.guide.show(function () { return st.phase === 'browse' ? P.el.querySelector('.app') : null; });
     if (CC.Q.allDone()) CC.Q.onAll();
 
@@ -3023,7 +3028,12 @@ L.progress(0, 0); L.enable(false); L.expl('');
       var r2 = await commandStage('t_test', o.cmd, false, { cmd: o.cmd }); if (!ok() || !r2) return;
       tried[pick] = true;
       /* the result of the command he just ran is already in the terminal (r_found, r_cap, r_est): it is not repeated in the instruction panel (Moaz 2026-11-09) */
-      if (pick === 2) L.add(CC.t('fb_best', { pw: LAST }).replace(/`/g, ''), 'ok ar');
+      if (pick === 2) {
+        L.add(CC.t('fb_best', { pw: LAST }).replace(/`/g, ''), 'ok ar');
+        var _pwr = CC.el('div', 'row ar'); var _pc = CC.el('code', 'tok cc-pwbig');
+        String(LAST).split('').forEach(function (ch) { var s = CC.el('span'); s.textContent = ch; s.className = /[0-9]/.test(ch) ? 'pc-dig' : (/[a-z]/.test(ch) ? 'pc-low' : 'pc-up'); _pc.appendChild(s); });
+        _pwr.appendChild(_pc); L.addEl(_pwr);   /* the strongest password in different colors by character type (Farhan 2026-11-10) */
+      }
       else {
         L.add(CC.t('fb_hint'), 'warn ar');
         if (tried[0] && tried[1] && tried[2]) L.add(CC.t('fb_all', { pw: LAST }).replace(/`/g, ''), 'ok ar');
@@ -3457,6 +3467,11 @@ window.CC_MISSION = {"stages":[{"label":"خمّن كلمة السر","keys":["t_
   function typeIn() {
     finishTyping();
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (document.querySelector('.overlay')) {   /* a lesson popup is open: wait until it closes before the bubble types (Farhan 2026-11-10) */
+      var _mo = new MutationObserver(function () { if (!document.querySelector('.overlay')) { _mo.disconnect(); typeIn(); } });
+      _mo.observe(document.body, { childList: true });
+      return;
+    }
     var units = [], chars = 0;
     (function walk(n) {
       n.childNodes.forEach(function (c) {
