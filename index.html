@@ -1469,7 +1469,14 @@ body{background:#e5ece7!important}
 /* أسئلة التحدي handle centered vertically in its section */
 body .cc-qhandle{top:50%;transform:translateY(-50%)}
 /* space between the challenge questions */
-body.side .qpanel .qrow{margin-bottom:10px}
+body.side .qpanel .qrow{margin-bottom:13px}
+/* golden / Fibonacci (5-8-13-21) spacing scale on components (Farhan 2026-11-10) */
+.cc-steps{gap:8px!important}
+.cc-step{padding:8px 13px!important;gap:13px!important}
+.cc-ref-b{padding:13px 21px 21px!important}
+.cc-cur{margin:13px 13px 0!important;padding:13px 21px 21px!important}
+.qtxt{margin-bottom:13px!important}
+.qin{gap:8px!important}
 /* lift the devices (not the stage) so the wire clears the footer; transform doesn't affect layout */
 body.side.cc-has-feed #stage .dev{transform:translateY(-26px)}
 /* scroll hint for the explanation (شرح مختصر) */
