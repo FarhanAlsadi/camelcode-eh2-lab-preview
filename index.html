@@ -1466,8 +1466,14 @@ body{background:#e5ece7!important}
 body .cc-qhandle{top:50%;transform:translateY(-50%)}
 /* space between the challenge questions */
 body.side .qpanel .qrow{margin-bottom:10px}
+/* scroll hint for the explanation (شرح مختصر) */
+body.cc-has-feed .cc-feed{position:relative}
+.cc-shint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:none;align-items:center;gap:6px;z-index:9;padding:5px 13px;border-radius:999px;background:var(--gold);color:var(--navy);font-weight:800;font-size:12.5px;box-shadow:0 8px 18px -6px rgba(0,0,0,.55);pointer-events:none;white-space:nowrap}
+.cc-shint.show{display:flex;animation:ccShintBounce 1.3s ease-in-out infinite}
+.cc-shint svg{width:16px;height:16px}
+@keyframes ccShintBounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(5px)}}
 /* panels fill to the bottom; footer pinned in the middle (out of flow = no scroll) */
-body.side.cc-has-feed .ethics{position:fixed;bottom:3px;left:var(--qd,14px);right:calc(var(--fw,320px) - 70px);text-align:center;white-space:normal!important;z-index:6;margin:0;padding:2px 12px}
+body.side.cc-has-feed .ethics{position:fixed;bottom:3px;left:var(--qd,14px);right:calc(var(--fw,320px) - 70px);text-align:center;white-space:normal!important;z-index:6;margin:0;padding:2px 12px;transition:left 340ms var(--ease),right 340ms var(--ease)}
 /* space between the robot and the panel bottom */
 body.side.cc-has-feed .cc-feed-h{padding-bottom:20px}
 /* on شرح مختصر: hide robot+tracker, keep a small bottom spacer so the explanation doesn't reach the edge */
@@ -1992,7 +1998,7 @@ body.side.cc-has-feed .cc-feed-h{padding-bottom:20px}
          and rises into the center of its bottom port. Every turn is a smooth curve, no hairpins. */
       var sx = x0 - 17, sy = y0;                        /* the wire comes out of the laptop's side edge */
       var E = pb + 17;                                  /* and goes into the phone's bottom edge */
-      var yB = Math.max(pb + 46, sy + 2 * 16 + 6);                              /* lowest run, under the phone */
+      var yB = Math.max(pb + 30, sy + 2 * 16 + 6);                              /* lowest run, under the phone */
       var xs;
       if (sideBySide) xs = (pr.right <= lr.left) ? (prr + sx) / 2 : (pl + sx) / 2;
       else xs = Math.max(10, Math.min(sx, pl) - 18);
@@ -2594,7 +2600,7 @@ window.CC_GALLERY=["data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAkGB
     title: 'أساسيات التهكير المستوى الأول: مختبر اختراق كلمات المرور',
     tag_hacker: 'الحاسوب (جهاز الهاكر)', tag_victim: 'الهاتف (جهاز الضحية)',
     mode_self: 'تعلم ذاتي', mode_inst: 'تعلم بإشراف مدرب', ref_btn: 'شرح مختصر', ref_title: 'شرح مختصر',
-    ethics: 'نتعلّم هنا أدوات وأساليب اختراق على أهدافٍ وهمية غير حقيقية؛ لذلك لا تجرّب هذه الأدوات أو الأساليب أبدًا على أشخاصٍ حقيقيين أو أجهزةٍ حقيقية، فذلك يعتبر غير قانوني.',
+    ethics: 'نتدرب هنا على أهداف وهمية، لا تجرب هذه الأدوات على أهداف حقيقية فهذا يعتبر غير قانوني.',
     continue: 'متابعة', skip: 'تخطّي', next: 'التالي', done: 'تمّ',
     cs_title: 'شاشة الأوامر', run: 'تشغيل الأمر', retry: 'جرّب مرة أخرى',
     /* phone */
@@ -3583,6 +3589,7 @@ window.CC_MISSION = {"stages":[{"label":"خمّن كلمة السر","keys":["t_
     if (side) { n.style.left = Math.round((pr.right - sr.left) * k + 14) + 'px'; n.style.top = Math.round((pr.top - sr.top) * k + pr.height * k * 0.26) + 'px'; }
     else { n.style.left = Math.round((pr.left - sr.left) * k + 14) + 'px'; n.style.width = Math.round(pr.width * k - 28) + 'px'; n.style.top = Math.round((pr.top - sr.top) * k + 78) + 'px'; }
     st.appendChild(n); play('try');
+    (function reflow(){ if(!n.isConnected) return; var sr2=st.getBoundingClientRect(), pr2=ph.getBoundingClientRect(), k2=st.clientWidth/Math.max(1,sr2.width); if(n.classList.contains('over')){ n.style.left=Math.round((pr2.left-sr2.left)*k2+14)+'px'; n.style.top=Math.round((pr2.top-sr2.top)*k2+78)+'px'; } else { n.style.left=Math.round((pr2.right-sr2.left)*k2+14)+'px'; n.style.top=Math.round((pr2.top-sr2.top)*k2+pr2.height*k2*0.26)+'px'; } requestAnimationFrame(reflow); })();
     if (persist) { notifT = null; } else { notifT = setTimeout(function () { n.classList.add('out'); setTimeout(function () { n.remove(); }, 260); }, 5000); }     /* gone after two seconds (Moaz 2026-11-09) */
   };
 
@@ -4132,13 +4139,18 @@ window.CC_MISSION = {"stages":[{"label":"خمّن كلمة السر","keys":["t_
     feed.insertBefore(bar, feed.firstChild);
     var ref = document.createElement('div'); ref.className = 'cc-ref'; ref.innerHTML = '<div class="cc-ref-b"></div>';
     feed.insertBefore(ref, steps);
+    var shint = document.createElement('div'); shint.className = 'cc-shint';
+    shint.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg><span>مرّر للأسفل لمتابعة قراءة الشرح</span>';
+    feed.appendChild(shint);
+    function updHint(){ var can = ref.scrollHeight - ref.clientHeight > 8, atB = ref.scrollTop + ref.clientHeight >= ref.scrollHeight - 6; shint.classList.toggle('show', feed.getAttribute('data-tab') === 'ref' && can && !atB); }
+    ref.addEventListener('scroll', updHint);
     function setTab(n) {
       if (n === 'ref') {
         var src = $('#drawer .dr-b'), dst = $('.cc-ref-b', ref); dst.innerHTML = '';
         if (src) { var cp = src.cloneNode(true); dst.appendChild(cp); fixMarks(cp); }
         ref.scrollTop = 0;
       }
-      feed.setAttribute('data-tab', n);
+      feed.setAttribute('data-tab', n); setTimeout(updHint, 40);
       Object.keys(btns).forEach(function (k) { btns[k].classList.toggle('on', k === n); btns[k].setAttribute('aria-selected', k === n ? 'true' : 'false'); });
       if (n === 'steps') btns.steps.classList.remove('dot');
     }
