@@ -479,8 +479,8 @@ body.inst #helpBtn{display:none}
 
 /* side questions (lab-settings.json "sideQuestions": true): the questions sit in a panel on the right (the first column in RTL) that stays in view while the lab scrolls. The page uses the whole screen width; below 1100px the questions go back under the lab */
 body.side .top-in,body.side .strip-in,body.side .wrap,body.side .ethics{max-width:none}
-body.side .top-in,body.side .strip-in{padding-inline:24px}
-body.side .wrap{padding-inline:24px}
+body.side .top-in,body.side .strip-in{padding-inline:46px}
+body.side .wrap{padding-inline:46px}
 @media (min-width:825px){
   body.side{--qw:clamp(380px,calc(26 * var(--vw)),540px)}
   body.side .wrap{display:grid;grid-template-columns:var(--qw) minmax(0,1fr);gap:20px;align-items:start}
@@ -943,7 +943,7 @@ body.cc-has-feed .q-task{display:none!important}
   /* the side columns take the width of the logo (--fw) and of the top buttons (--qw), measured by brand-addon.js part 7;
      the page keeps the top bar's 24px side margin so the edges line up */
   body.side{--qw:331px;--fw:321px}
-  body.side.cc-has-feed .wrap{grid-template-columns:var(--fw) minmax(0,1fr) var(--qw);padding-inline:24px;column-gap:0}
+  body.side.cc-has-feed .wrap{grid-template-columns:var(--fw) minmax(0,1fr) var(--qw);padding-inline:46px;column-gap:0}
   body.side .cc-feed{grid-column:1;grid-row:1;contain:size}
   body.side.cc-has-feed .qpanel{grid-column:3}
   body.side.cc-has-feed .overlay{padding-inline-start:calc(var(--fw) + 44px);padding-inline-end:calc(var(--qw) + 44px)}
